@@ -7,20 +7,25 @@ public class LineUtils {
 	public static boolean linesIntersect(Line line1, Line line2) {
 		Object3D firstLineDirectingVector = getLineDirectingVector(line1);
 		Object3D secondLineDirectingVector = getLineDirectingVector(line2);
-		return calculateCompositionalProduct(line1, line2) == 0
+		return VectorUtils.calculateCompositionalProduct(
+				getConnectingVector(line1, line2), firstLineDirectingVector,
+				secondLineDirectingVector) == 0
 				&& MatrixUtils.computeRankFromTwo3DVectors(
 						firstLineDirectingVector, secondLineDirectingVector) == 2;
 	}
 
 	public static boolean linesAreSkew(Line line1, Line line2) {
-		return calculateCompositionalProduct(line1, line2) != 0;
+		return VectorUtils.calculateCompositionalProduct(
+				getConnectingVector(line1, line2),
+				getLineDirectingVector(line1), getLineDirectingVector(line2)) != 0;
 	}
 
 	public static boolean linesAreParallel(Line line1, Line line2) {
 		Object3D firstLineDirectingVector = getLineDirectingVector(line1);
 		Object3D secondLineDirectingVector = getLineDirectingVector(line2);
 		Object3D connectingVector = getConnectingVector(line1, line2);
-		return calculateCompositionalProduct(line1, line2) == 0
+		return VectorUtils.calculateCompositionalProduct(connectingVector,
+				firstLineDirectingVector, secondLineDirectingVector) == 0
 				&& MatrixUtils.computeRankFromTwo3DVectors(
 						firstLineDirectingVector, secondLineDirectingVector) == 1
 				&& MatrixUtils.computeRankFromTwo3DVectors(connectingVector,
@@ -31,7 +36,8 @@ public class LineUtils {
 		Object3D firstLineDirectingVector = getLineDirectingVector(line1);
 		Object3D secondLineDirectingVector = getLineDirectingVector(line2);
 		Object3D connectingVector = getConnectingVector(line1, line2);
-		return calculateCompositionalProduct(line1, line2) == 0
+		return VectorUtils.calculateCompositionalProduct(connectingVector,
+				firstLineDirectingVector, secondLineDirectingVector) == 0
 				&& MatrixUtils.computeRankFromTwo3DVectors(
 						firstLineDirectingVector, secondLineDirectingVector) == 1
 				&& MatrixUtils.computeRankFromTwo3DVectors(connectingVector,
@@ -54,11 +60,105 @@ public class LineUtils {
 		return connectingVector;
 	}
 
-	private static double calculateCompositionalProduct(Line line1, Line line2) {
-		Object3D connectingVector = getConnectingVector(line1, line2);
-		Object3D firstLineDirectingVector = getLineDirectingVector(line1);
-		Object3D secondLineDirectingVector = getLineDirectingVector(line2);
-		return MatrixUtils.computeDeterminant3D(connectingVector,
-				firstLineDirectingVector, secondLineDirectingVector);
+	public static Object3D[] findClosestPointsBetweenTheLines(Line line1,
+			Line line2) {
+		Object3D p0 = line1.getStartingPoint();
+		Object3D p1 = line1.getEndingPoint();
+		Object3D q0 = line2.getStartingPoint();
+		Object3D q1 = line2.getEndingPoint();
+		double a = VectorUtils.calculateDotProduct(
+				VectorUtils.getDifference(p1, p0),
+				VectorUtils.getDifference(p1, p0));
+		double b = VectorUtils.calculateDotProduct(
+				VectorUtils.getDifference(p1, p0),
+				VectorUtils.getDifference(q1, q0));
+		double c = VectorUtils.calculateDotProduct(
+				VectorUtils.getDifference(q1, q0),
+				VectorUtils.getDifference(q1, q0));
+		double d = VectorUtils.calculateDotProduct(
+				VectorUtils.getDifference(p1, p0),
+				VectorUtils.getDifference(p0, q0));
+		double e = VectorUtils.calculateDotProduct(
+				VectorUtils.getDifference(q1, q0),
+				VectorUtils.getDifference(p0, q0));
+
+		/*
+		 * Parameterize line1 by P(s) = (1-s)感0 + s感1 and Q(t) = (1-t)想0 + t想1.
+		 * Then obtain the equality (1-s)感0 + s感1 = (1-t)想0 + t想1. Solving this by 
+		 * each component leads to the system:
+		 * (1-s)感0.x + s感1.x = (1-t)想0.x + t想1.x
+		 * (1-s)感0.y + s感1.y = (1-t)想0.y + t想1.y
+		 * (1-s)感0.z + s感1.z = (1-t)想0.z + t想1.z
+		 */
+		double det = a * c - b * b;
+		double s = 0;
+		double t = 0;
+		if (det > 0) {
+			double bte = b * e;
+			double ctd = c * d;
+			if (bte < ctd) {
+				if (e <= 0) {
+					s = (-d >= a ? 1 : (-d > 0 ? -d / a : 0));
+					t = 0;
+				} else if (e < c) {
+					s = 0;
+					t = e / c;
+				} else {
+					s = (b - d >= a ? 1 : (b - d > 0 ? (b - d) / a : 0));
+					t = 1;
+				}
+			} else {
+				s = bte - ctd;
+				if (s >= det) {
+					if (b + e <= 0) {
+						s = (-d <= 0 ? 0 : (-d < s ? -d / a : 1));
+						t = 0;
+					} else if (b + e < c) {
+						s = 1;
+						t = (b + e) / c;
+					} else {
+						s = (b - d <= 0 ? 0 : (b - d < a ? (b - d) / a : 1));
+						t = 1;
+					}
+				} else {
+					double ate = a * e;
+					double btd = b * d;
+					if (ate <= btd) {
+						s = (-d <= 0 ? 0 : (-d >= a ? 1 : -d / a));
+						t = 0;
+					} else {
+						t = ate - btd;
+						if (t >= det) {
+							s = (b - d <= 0 ? 0
+									: (b - d >= a ? 1 : (b - d) / a));
+							t = 1;
+						} else {
+							s /= det;
+							t /= det;
+						}
+					}
+				}
+			}
+		} else {
+			if (e <= 0) {
+				s = (-d <= 0 ? 0 : (-d >= a ? 1 : -d / a));
+				t = 0;
+			} else if (e >= c) {
+				s = (b - d <= 0 ? 0 : (b - d >= a ? 1 : (b - d) / a));
+				t = 1;
+			} else {
+				s = 0;
+				t = e / c;
+			}
+		}
+
+		Object3D closesPointBelongingToFirstLine = new Object3D((1 - s)
+				* p0.getX() + s * p1.getX(), (1 - s) * p0.getY() + s
+				* p1.getY(), (1 - s) * p0.getZ() + s * p1.getZ());
+		Object3D closesPointBelongingToSecondLine = new Object3D((1 - t)
+				* q0.getX() + t * q1.getX(), (1 - t) * q0.getY() + t
+				* q1.getY(), (1 - t) * q0.getZ() + t * q1.getZ());
+		return new Object3D[] { closesPointBelongingToFirstLine,
+				closesPointBelongingToSecondLine };
 	}
 }

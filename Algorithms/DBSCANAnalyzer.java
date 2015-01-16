@@ -133,7 +133,7 @@ public class DBSCANAnalyzer {
 	private List<Line> getNeighbours(Line line, List<Line> lines) {
 		List<Line> neighbours = new ArrayList<Line>();
 		for (Line neighbour : lines) {
-			if (!lines.equals(neighbour)
+			if (!line.equals(neighbour)
 					&& distanceMeasure.dist(neighbour, line) <= this.eps) {
 				neighbours.add(neighbour);
 			}

@@ -1,6 +1,6 @@
 package DataStructures;
 
-public class Object2D {
+public class Object2D implements IDimensionalObject {
 	public static final int SPACE_DIMENSION = 2;
 
 	protected final double x;
@@ -49,11 +49,7 @@ public class Object2D {
 		return hash;
 	}
 
-	/**
-	 * Determines if the object has non-zero components
-	 * 
-	 * @return true if any of the object's components is not 0
-	 */
+	@Override
 	public boolean isNonZeroObject() {
 		return getX() != 0 || getY() != 0;
 	}

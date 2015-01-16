@@ -143,19 +143,6 @@ public class Line {
 				- getDz());
 	}
 
-	public boolean isParallelTo(Line otherLine) {
-		if (otherLine.getDx() == 0) {
-			
-		}
-		
-		
-		float xRelation = getDx() / otherLine.getDx();
-		float yRelation = getDy() / otherLine.getDy();
-		float zRelation = getDz() / otherLine
-				.getDz();
-		return xRelation == yRelation && yRelation == zRelation;
-	}
-
 	@Override
 	public boolean equals(Object other) {
 		if (other == null)

@@ -4,10 +4,10 @@ import DataStructures.Line;
 import DataStructures.Object3D;
 import Utilities.LineUtils;
 
-public class EucledianDistanceMeasure extends AbstractDistanceMeasure {
+public class ChebyshevDistanceMeasure extends AbstractDistanceMeasure {
 
 	/**
-	 * Computes the Eucledian 2-norm distance between two closest points of the
+	 * Computes the infinity norm distance between two closest points of the
 	 * given lines
 	 * 
 	 * @param line1
@@ -22,8 +22,8 @@ public class EucledianDistanceMeasure extends AbstractDistanceMeasure {
 				line1, line2);
 		Object3D point1 = closestPoints[0];
 		Object3D point2 = closestPoints[1];
-		return Math.sqrt(Math.pow(point1.getX() - point2.getX(), 2)
-				+ Math.pow(point1.getY() - point2.getY(), 2)
-				+ Math.pow(point1.getZ() - point2.getZ(), 2));
+		return Math.max(Math.max(Math.abs(point1.getX() - point2.getX()),
+				Math.abs(point1.getY() - point2.getY())),
+				Math.abs(point1.getZ() - point2.getZ()));
 	}
 }
