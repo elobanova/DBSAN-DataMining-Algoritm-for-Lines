@@ -2,6 +2,7 @@ package Utilities;
 
 import DataStructures.Line;
 import DataStructures.Object3D;
+import DataStructures.Pair;
 
 public class LineUtils {
 	public static boolean linesIntersect(Line line1, Line line2) {
@@ -60,7 +61,7 @@ public class LineUtils {
 		return connectingVector;
 	}
 
-	public static Object3D[] findClosestPointsBetweenTheLines(Line line1,
+	public static Pair<Object3D, Object3D> findClosestPointsBetweenTheLines(Line line1,
 			Line line2) {
 		Object3D p0 = line1.getStartingPoint();
 		Object3D p1 = line1.getEndingPoint();
@@ -83,12 +84,11 @@ public class LineUtils {
 				VectorUtils.getDifference(p0, q0));
 
 		/*
-		 * Parameterize line1 by P(s) = (1-s)·P0 + s·P1 and Q(t) = (1-t)·Q0 + t·Q1.
-		 * Then obtain the equality (1-s)·P0 + s·P1 = (1-t)·Q0 + t·Q1. Solving this by 
-		 * each component leads to the system:
-		 * (1-s)·P0.x + s·P1.x = (1-t)·Q0.x + t·Q1.x
-		 * (1-s)·P0.y + s·P1.y = (1-t)·Q0.y + t·Q1.y
-		 * (1-s)·P0.z + s·P1.z = (1-t)·Q0.z + t·Q1.z
+		 * Parameterize line1 by P(s) = (1-s)·P0 + s·P1 and line2 by Q(t) = (1-t)·Q0 + t·Q1.
+		 * Then obtain the equality in case they intersect:
+		 * (1-s)·P0 + s·P1 = (1-t)·Q0 + t·Q1. 
+		 * Solving this by each component leads to the system:
+		 * P0 + s·(P1-P0) = Q0 + t·(Q1-Q0).
 		 */
 		double det = a * c - b * b;
 		double s = 0;
@@ -97,7 +97,7 @@ public class LineUtils {
 			double bte = b * e;
 			double ctd = c * d;
 			if (bte < ctd) {
-				if (e <= 0) {
+				if (e <= 0) { //skew??
 					s = (-d >= a ? 1 : (-d > 0 ? -d / a : 0));
 					t = 0;
 				} else if (e < c) {
@@ -158,7 +158,7 @@ public class LineUtils {
 		Object3D closesPointBelongingToSecondLine = new Object3D((1 - t)
 				* q0.getX() + t * q1.getX(), (1 - t) * q0.getY() + t
 				* q1.getY(), (1 - t) * q0.getZ() + t * q1.getZ());
-		return new Object3D[] { closesPointBelongingToFirstLine,
-				closesPointBelongingToSecondLine };
+		return new Pair<Object3D, Object3D>(closesPointBelongingToFirstLine,
+				closesPointBelongingToSecondLine);
 	}
 }

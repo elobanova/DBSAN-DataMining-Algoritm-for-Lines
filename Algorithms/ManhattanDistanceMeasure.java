@@ -2,6 +2,7 @@ package Algorithms;
 
 import DataStructures.Line;
 import DataStructures.Object3D;
+import DataStructures.Pair;
 import Utilities.LineUtils;
 
 public class ManhattanDistanceMeasure extends AbstractDistanceMeasure {
@@ -18,10 +19,10 @@ public class ManhattanDistanceMeasure extends AbstractDistanceMeasure {
 	 */
 	@Override
 	protected double dist(Line line1, Line line2) {
-		Object3D[] closestPoints = LineUtils.findClosestPointsBetweenTheLines(
+		Pair<Object3D, Object3D> closestPoints = LineUtils.findClosestPointsBetweenTheLines(
 				line1, line2);
-		Object3D point1 = closestPoints[0];
-		Object3D point2 = closestPoints[1];
+		Object3D point1 = closestPoints.getLeftElement();
+		Object3D point2 = closestPoints.getRightElement();
 		return Math.abs(point1.getX() - point2.getX())
 				+ Math.abs(point1.getY() - point2.getY())
 				+ Math.abs(point1.getZ() - point2.getZ());
