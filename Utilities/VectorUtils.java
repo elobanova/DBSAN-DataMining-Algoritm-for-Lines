@@ -1,30 +1,53 @@
 package Utilities;
 
-import DataStructures.Object2D;
 import DataStructures.Object3D;
 
 public class VectorUtils {
-	public static double calculateCompositionalProduct(
-			Object3D connectingVector, Object3D firstLineDirectingVector,
-			Object3D secondLineDirectingVector) {
-		return MatrixUtils.computeDeterminant3D(connectingVector,
-				firstLineDirectingVector, secondLineDirectingVector);
-	}
 
-	public static Object2D getDifference(Object2D o1, Object2D o2) {
-		return new Object2D(o1.getX() - o2.getX(), o1.getY() - o2.getY());
-	}
+	/**
+	 * Calculates the difference 3D vector of the given vector objects by
+	 * creating a new 3D resulting vector which coordinates simply represent the
+	 * difference between corresponding components (axis)
+	 * 
+	 * @param o1
+	 *            the first vector object (minuend)
+	 * @param o2
+	 *            the second vector object (subtrahend)
+	 * 
+	 * @return the difference 3D vector of the given vector objects
+	 * @throws IllegalArgumentException
+	 *             if the objects given are null
+	 */
+	public static Object3D getDifference(Object3D o1, Object3D o2)
+			throws IllegalArgumentException {
+		if (o1 == null || o2 == null) {
+			String errorMessage = "The difference operators are not valid.";
+			throw new IllegalArgumentException(errorMessage);
+		}
 
-	public static double calculateDotProduct(Object2D o1, Object2D o2) {
-		return o1.getX() * o2.getX() + o1.getY() * o2.getY();
-	}
-
-	public static Object3D getDifference(Object3D o1, Object3D o2) {
 		return new Object3D(o1.getX() - o2.getX(), o1.getY() - o2.getY(),
 				o1.getZ() - o2.getZ());
 	}
 
-	public static double calculateDotProduct(Object3D o1, Object3D o2) {
+	/**
+	 * Calculates the dot product of two 3D vectors
+	 * 
+	 * @param o1
+	 *            the first 3D vector object
+	 * @param o2
+	 *            the second 3D vector object
+	 * 
+	 * @return the dot product
+	 * @throws IllegalArgumentException
+	 *             if the objects given are null
+	 */
+	public static double calculateDotProduct(Object3D o1, Object3D o2)
+			throws IllegalArgumentException {
+		if (o1 == null || o2 == null) {
+			String errorMessage = "The dot product operators are not valid.";
+			throw new IllegalArgumentException(errorMessage);
+		}
+
 		return o1.getX() * o2.getX() + o1.getY() * o2.getY() + o1.getZ()
 				* o2.getZ();
 	}
